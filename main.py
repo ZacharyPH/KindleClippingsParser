@@ -1,5 +1,5 @@
 def main():
-    filename = "My Clippings 0.txt"
+    filename = "My Clippings 1.txt"
     extract(filename)
 
 
@@ -30,13 +30,13 @@ def parse(chunk):
     return {"Book": book, "Author": author, "Date": date, "Location": loc, "Clip": clip}
 
 
-def write(data, filename="out.csv"):
+def write(data, filename="out1.csv"):
     # TODO: Filter duplicates
     out = open("./data/" + filename, "w", encoding="UTF8")
     items = ["Book", "Author", "Date", "Location", "Clip"]
     out.write(",".join(items) + "\n")
     for clip in data:   # TODO: Cleanup .split / .join pairs with .replace for escaping commas
-        msg = clip["Clip"].replace(",", "\\,")
+        msg = clip["Clip"].replace(",", "\\,").replace("\"", "\'")
         if len(msg.strip(" ")) == 0:    # Empty clip
             continue    # TODO: Now obsolete, I think
         out.write(",".join(clip[item].replace(",", "\\,") for item in items[:-1]) + "," + msg + "\n")
