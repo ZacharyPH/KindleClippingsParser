@@ -1,5 +1,5 @@
 def main():
-    filename = "My Clippings 1.txt"
+    filename = "My Clippings 0.txt"
     extract(filename)
 
 
@@ -20,7 +20,8 @@ def extract(file):
 
 def parse(chunk):
     book_and_auth, loc_and_date, _, *clip = (item.strip(" \n") for item in chunk)
-    if len("\",\"".join("\n".join(clip["Clip"]).split(",")).strip(" ")) == 0:
+    if len(clip := "\n".join(clip).strip(" \n")) == 0:
+        print("Empty clip...")
         return {}
     *loc, date = loc_and_date.split(" | ")
     loc = " | ".join([l.strip("- Highlight Bookmark Loc.") for l in loc])
@@ -29,16 +30,16 @@ def parse(chunk):
     return {"Book": book, "Author": author, "Date": date, "Location": loc, "Clip": clip}
 
 
-def write(data, filename="out1.csv"):
+def write(data, filename="out.csv"):
     # TODO: Filter duplicates
     out = open("./data/" + filename, "w", encoding="UTF8")
     items = ["Book", "Author", "Date", "Location", "Clip"]
     out.write(",".join(items) + "\n")
     for clip in data:   # TODO: Cleanup .split / .join pairs with .replace for escaping commas
-        msg = "\",\"".join("\n".join(clip["Clip"]).split(","))
+        msg = clip["Clip"].replace(",", "\\,")
         if len(msg.strip(" ")) == 0:    # Empty clip
             continue    # TODO: Now obsolete, I think
-        out.write(",".join("\",\"".join(clip[item].split(",")) for item in items[:-1]) + "," + msg + "\n")
+        out.write(",".join(clip[item].replace(",", "\\,") for item in items[:-1]) + "," + msg + "\n")
     out.close()
 
 
